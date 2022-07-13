@@ -6,19 +6,24 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
 import org.slf4j.LoggerFactory
 
-class ProducerDemo {
+class ProducerDemoWithKeys {
 }
 
 fun main(args: Array<String>) {
-    val logger = LoggerFactory.getLogger(ProducerDemo::class.java)
+    val logger = LoggerFactory.getLogger(ProducerDemoWithKeys::class.java)
 
-    println("---- Producer Demo ----")
+    println("---- ProducerDemoWithKeys Demo ----")
 
     val producer = KafkaProducer<String, String>(KafkaServerProperties.loadProducerConfig())
+    val topic = "dummy-java-topic-with-keys"
 
     for (i in 1..5) {
+        val value = "hello java $i"
+        val key = "id_$i"
         // create producer record
-        val record = ProducerRecord<String, String>("dummy-java-topic", "hello java $i")
+        val record = ProducerRecord<String, String>(topic, key, value)
+
+        logger.info("Key: $key")
 
         // send data -async
         producer.send(record) { recordMetadata: RecordMetadata, exception: Exception? ->
@@ -34,7 +39,7 @@ fun main(args: Array<String>) {
             } else {
                 logger.error("Error occurred while producing", exception)
             }
-        }
+        }.get() // blocking call - don't do this is PROD
     }
 
     // flush data
