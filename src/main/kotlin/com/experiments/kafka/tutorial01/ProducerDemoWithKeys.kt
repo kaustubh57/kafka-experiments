@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
     val topic = "dummy-java-topic-with-keys"
 
     for (i in 1..5) {
-        val value = "hello java $i"
+        val value = "hello java with keys $i"
         val key = "id_$i"
         // create producer record
         val record = ProducerRecord<String, String>(topic, key, value)
